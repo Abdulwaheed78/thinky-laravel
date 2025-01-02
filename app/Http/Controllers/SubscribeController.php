@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subscribe;
 use Illuminate\Http\Request;
 
 class SubscribeController extends Controller
@@ -11,7 +12,8 @@ class SubscribeController extends Controller
      */
     public function index()
     {
-        //
+        $data=Subscribe::where('is_deleted','no')->orderby('id','desc')->get();
+        return view('admin.subscribe.subscribe',compact('data'));
     }
 
     /**
@@ -57,8 +59,9 @@ class SubscribeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id)
     {
-        //
+        Subscribe::where('id',$id)->update(['is_deleted'=>'yes']);
+        return redirect()->route('subscribe.index')->with('success','Subscriber Deleted !');
     }
 }

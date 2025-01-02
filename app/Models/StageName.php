@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class StageName extends Model
 {
     use HasFactory;
+    protected $table ='stage_names';
 }

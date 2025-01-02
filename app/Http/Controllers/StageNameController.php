@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StageName;
 use Illuminate\Http\Request;
 
 class StageNameController extends Controller
@@ -11,15 +12,29 @@ class StageNameController extends Controller
      */
     public function index()
     {
-        //
+        $data = StageName::where('is_deleted', 'no')->orderby('id', 'desc')->get();
+        return view('admin.stagename.stagename', compact('data'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:stage_names,name',
+            'status' => 'required'
+        ]);
+
+        $stagename = new StageName();
+        $stagename->name = $request->name;
+        $stagename->status = $request->status;
+
+        if ($stagename->save()) {
+            return redirect()->route('stagename.index')->with('success', 'Stage Name Created !');
+        } else {
+            return view('admin.stagename.add');
+        }
     }
 
     /**
@@ -33,9 +48,9 @@ class StageNameController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
-        //
+        return view('admin.stagename.add');
     }
 
     /**
@@ -43,7 +58,8 @@ class StageNameController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = StageName::find($id);
+        return view('admin.stagename.update', compact('data'));
     }
 
     /**
@@ -51,14 +67,25 @@ class StageNameController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:stage_names,name',
+            'status' => 'required'
+        ]);
+        if(StageName::where('id', $id)->update(['name' => $request->name, 'status' => $request->status])){
+            return redirect()->route('stagename.index')->with('status','Record Updated !');
+
+        }else{
+            $data=StageName::find($id);
+            return view('admin.stagename.update',compact('data'));
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id)
     {
-        //
+        StageName::where('id', $id)->update(['is_deleted' => 'yes']);
+        return redirect()->route('stagename.index')->with('success', 'Stage Name Deleted !');
     }
 }

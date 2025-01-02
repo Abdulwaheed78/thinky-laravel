@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Newsletter;
 use Illuminate\Http\Request;
 
 class NewsletterController extends Controller
@@ -11,7 +12,8 @@ class NewsletterController extends Controller
      */
     public function index()
     {
-        //
+        $data=Newsletter::where('is_deleted','no')->orderby('id','desc')->get();
+        return view ('admin.newsletter.newsletter',compact('data'));
     }
 
     /**
@@ -57,8 +59,9 @@ class NewsletterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id)
     {
-        //
+        Newsletter::where('id',$id)->update(['is_deleted'=>'yes']);
+        return redirect()->route('newsletter.index')->with('success','NewsLetter Deleted !');
     }
 }
