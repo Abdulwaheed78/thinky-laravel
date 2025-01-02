@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\View;
+use App\Models\Comment;
+use App\Models\Blog;
 
 class UserController extends Controller
 {
@@ -39,7 +42,12 @@ class UserController extends Controller
 
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $views = View::orderby('id', 'desc')->get();
+        $comments = Comment::orderby('id', 'desc')->get();
+        $subscriber = Comment::distinct('email')->get();
+        $blog=Blog::orderBy('id','desc')->limit(10)->get();
+
+        return view('admin.dashboard', compact('views', 'comments','subscriber','blog'));
     }
     /**
      * Show the form for editing the specified resource.
